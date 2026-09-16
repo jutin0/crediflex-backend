@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrediFlex - Seu Crédito Inteligente</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400,500,600,700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Inter', sans-serif; }</style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <!-- Cabeçalho -->
+    <header class="bg-indigo-600 text-white shadow-md py-4 px-6 flex justify-between items-center">
+        <h1 class="text-xl font-bold tracking-wide">CrediFlex</h1>
+        <span id="badge-nivel" class="bg-indigo-700 text-xs px-3 py-1 rounded-full font-semibold uppercase tracking-wider">Conta Inativa</span>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="max-w-md w-full mx-auto p-4 flex-grow flex flex-col gap-6 justify-center">
+
+        <!-- TELA 1: Cadastro Inicial Rápido -->
+        <div id="card-cadastro" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+            <h2 class="text-lg font-bold text-slate-900 mb-2">Bem-vindo ao CrediFlex</h2>
+            <p class="text-sm text-slate-500 mb-4">Cadastre-se para explorar como funciona o crédito inteligente nas lojistas parceiras.</p>
+            
+            <form id="form-cadastro" class="flex flex-col gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Nome Completo</label>
+                    <input type="text" id="nome" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Ex: João Silva">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">CPF</label>
+                    <input type="text" id="cpf" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="000.000.000-00">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">E-mail</label>
+                    <input type="email" id="email" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="seu@email.com">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Telefone / WhatsApp</label>
+                    <input type="text" id="telefone" required class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="(00) 00000-0000">
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-lg transition text-sm shadow-sm">
+                    Acessar e Conhecer os Níveis
+                </button>
+            </form>
+        </div>
+
+        <!-- TELA 2: Painel Principal (O cliente entra, vê tudo e decide se ativa) -->
+        <div id="card-painel" class="hidden flex flex-col gap-5">
+            
+            <!-- Alerta de Conta Inativa com Botão de Ativação -->
+            <div id="banner-ativacao" class="bg-amber-50 border border-amber-200 p-4 rounded-2xl">
+                <h3 class="text-sm font-bold text-amber-900 mb-1">Sua conta está inativa</h3>
+                <p class="text-xs text-amber-700 mb-3">Para liberar o seu limite de R$ 20,00 e começar a comprar, faça a ativação única de R$ 2,00 via Pix.</p>
+                <button id="btn-gerar-pix" onclick="ativarConta()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-medium py-2 rounded-lg text-xs transition shadow-sm">
+                    Ativar Nível 1 com Pix (R$ 2,00)
+                </button>
+            </div>
+
+            <!-- Box do Pix Gerado (Aparece após clicar em ativar) -->
+            <div id="box-pix" class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 hidden text-center">
+                <h3 class="text-sm font-bold text-slate-900 mb-2">Pague o Pix de Ativação</h3>
+                <p class="text-xs text-slate-500 mb-3">Clique no botão abaixo para abrir o pagamento:</p>
+                <a id="link-pix" href="#" target="_blank" class="inline-block bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-4 py-2.5 rounded-lg text-xs transition">
+                    Pagar R$ 2,00 via Pix
+                </a>
+            </div>
+
+            <!-- Resumo do Limite Atual -->
+            <div class="bg-gradient-to-br from-indigo-900 to-indigo-700 text-white p-5 rounded-2xl shadow-md">
+                <p class="text-xs font-medium uppercase tracking-wider text-indigo-200">Seu Limite de Crédito</p>
+                <h2 id="txt-limite" class="text-3xl font-bold mt-1">R$ 0,00</h2>
+                <div class="mt-3 pt-3 border-t border-indigo-600/50 flex justify-between text-xs text-indigo-200">
+                    <span>Nível: <strong id="txt-nivel" class="text-white">1 (Iniciante)</strong></span>
+                    <span>Fatura: <strong id="txt-fatura" class="text-white">R$ 0,00</strong></span>
+                </div>
+            </div>
+
+            <!-- Vitrine de Níveis (Para o cliente entender onde pode chegar) -->
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+                <h3 class="text-sm font-bold text-slate-900 mb-3">Escada de Benefícios</h3>
+                <div class="space-y-3 text-xs">
+                    <div class="p-3 bg-indigo-50 border border-indigo-100 rounded-xl flex justify-between items-center">
+                        <div>
+                            <strong class="text-indigo-900 block">Nível 1</strong>
+                            <span class="text-slate-500">Limite de R$ 20,00</span>
+                        </div>
+                        <span class="bg-indigo-200 text-indigo-800 px-2 py-1 rounded font-semibold">Ativação R$ 2,00</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl flex justify-between items-center opacity-75">
+                        <div>
+                            <strong class="text-slate-800 block">Nível 2</strong>
+                            <span class="text-slate-500">Limite de R$ 50,00</span>
+                        </div>
+                        <span class="text-slate-500 font-medium">Pague 3 faturas em dia</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl flex justify-between items-center opacity-75">
+                        <div>
+                            <strong class="text-slate-800 block">Nível 3</strong>
+                            <span class="text-slate-500">Limite de R$ 100,00</span>
+                        </div>
+                        <span class="text-slate-500 font-medium">Cliente VIP</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <footer class="text-center py-4 text-xs text-slate-400">
+        &copy; 2026 CrediFlex. Todos os direitos reservados.
+    </footer>
+
+    <!-- Lógica JavaScript -->
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let dadosCliente = null;
+
+        document.getElementById('form-cadastro').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Salva os dados temporariamente para uso
+            dadosCliente = {
+                nome: document.getElementById('nome').value,
+                cpf: document.getElementById('cpf').value,
+                email: document.getElementById('email').value,
+                telefone: document.getElementById('telefone').value
+            };
+
+            // Esconde o cadastro e libera o painel para o cliente explorar
+            document.getElementById('card-cadastro').classList.add('hidden');
+            document.getElementById('card-painel').classList.remove('hidden');
+        });
+
+        async function ativarConta() {
+            if (!dadosCliente) return;
+
+            try {
+                const response = await fetch(`${API_URL}/ativar-conta`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(dadosCliente)
+                });
+
+                const resultado = await response.json();
+
+                if (resultado.sucesso) {
+                    document.getElementById('banner-ativacao').classList.add('hidden');
+                    document.getElementById('box-pix').classList.remove('hidden');
+                    document.getElementById('link-pix').href = resultado.pixQrCodeUrl;
+                    document.getElementById('badge-nivel').innerText = 'Aguardando Pagamento';
+                } else {
+                    alert('Erro: ' + resultado.erro);
+                }
+            } catch (error) {
+                alert('Erro ao conectar com o servidor backend.');
+            }
+        }
+    </script>
+</body>
+</html>
